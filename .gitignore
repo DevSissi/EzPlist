@@ -1,1 +1,36 @@
+# 开发环境
+.DS_Store
+Thumbs.db
 .windsurf/
+
+# 临时文件
+*.tmp
+*.temp
+*.ps1
+temp-*
+app-icon.png
+
+# Logs
+logs
+*.log
+
+# 编辑器
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# 依赖
+node_modules
+dist
+dist-ssr
+*.local
+
+# Tauri
+src-tauri/target/
+src-tauri/WixTools/
+
+# 操作系统
+Thumbs.db
+.DS_Store

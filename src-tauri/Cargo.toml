@@ -1,0 +1,33 @@
+[package]
+name = "ezplist"
+version = "0.1.0"
+description = "高性能精灵图管理工具 (High-Performance Sprite Sheet Manager)"
+authors = ["EzPlist Team"]
+license = "MIT"
+repository = ""
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+tauri-build = { version = "2.0", features = [] }
+
+[dependencies]
+tauri = { version = "2.1", features = ["protocol-asset"] }
+tauri-plugin-dialog = "2.0"
+tauri-plugin-fs = "2.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+image = "0.25"
+plist = "1.7"
+zip = "0.6"
+rayon = "1.8"
+md-5 = "0.10"
+uuid = { version = "1.6", features = ["v4", "serde"] }
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"

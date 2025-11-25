@@ -1,0 +1,264 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 全局样式 - 暗色主题 */
+@layer base {
+  :root {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 13%;
+    --card-hover: 222 47% 16%;
+    --border: 215 20% 25%;
+    --muted: 215 20% 65%;
+    --accent: 217 91% 60%;
+    --accent-secondary: 270 91% 65%;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    @apply bg-dark-900 text-zinc-100 antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    background: linear-gradient(135deg, #0f0a1e 0%, #1a1035 25%, #2d1f4e 50%, #1a1035 75%, #0f0a1e 100%);
+    background-size: 400% 400%;
+    background-attachment: fixed;
+    animation: gradient-flow 15s ease infinite;
+  }
+
+  @keyframes gradient-flow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* 改进的文字渲染 */
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-zinc-50 font-semibold;
+  }
+}
+
+/* 自定义滚动条 */
+@layer utilities {
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    @apply bg-zinc-800/50 rounded-full;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-zinc-600/80 rounded-full hover:bg-zinc-500/80 transition-colors;
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hidden {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* 透明背景棋盘格 - 柔和紫色版 */
+  .checkerboard {
+    background-image: 
+      linear-gradient(45deg, rgba(139, 92, 246, 0.06) 25%, transparent 25%),
+      linear-gradient(-45deg, rgba(139, 92, 246, 0.06) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, rgba(139, 92, 246, 0.06) 75%),
+      linear-gradient(-45deg, transparent 75%, rgba(139, 92, 246, 0.06) 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+    background-color: rgba(15, 10, 30, 0.8);
+  }
+
+  /* 小号棋盘格 - 柔和紫色版 */
+  .checkerboard-sm {
+    background-image: 
+      linear-gradient(45deg, rgba(139, 92, 246, 0.08) 25%, transparent 25%),
+      linear-gradient(-45deg, rgba(139, 92, 246, 0.08) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, rgba(139, 92, 246, 0.08) 75%),
+      linear-gradient(-45deg, transparent 75%, rgba(139, 92, 246, 0.08) 75%);
+    background-size: 8px 8px;
+    background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+    background-color: rgba(26, 16, 53, 0.9);
+  }
+
+  /* 玻璃拟态效果 - 暗色版 */
+  .glass {
+    @apply backdrop-blur-md bg-zinc-900/60 border border-zinc-700/50 shadow-2xl;
+  }
+
+  /* 毛玻璃卡片 - 暗色版 */
+  .glass-card {
+    @apply backdrop-blur-xl bg-zinc-900/70 border border-zinc-700/50 rounded-2xl shadow-2xl;
+  }
+
+  /* 新拟态效果 - 暗色版 */
+  .neumorphic {
+    @apply shadow-neumorphic-dark bg-zinc-800;
+  }
+
+  .neumorphic-inset {
+    @apply shadow-neumorphic-inset-dark bg-zinc-800;
+  }
+
+  /* 渐变边框 */
+  .gradient-border {
+    position: relative;
+    background-clip: padding-box;
+  }
+
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 2px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, #3b82f6, #a855f7);
+    -webkit-mask: 
+      linear-gradient(#fff 0 0) content-box, 
+      linear-gradient(#fff 0 0);
+    mask: 
+      linear-gradient(#fff 0 0) content-box, 
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* 悬浮发光效果 - 增强版 */
+  .hover-glow {
+    @apply transition-all duration-300;
+  }
+
+  .hover-glow:hover {
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.5), 0 0 60px rgba(147, 51, 234, 0.3);
+    transform: translateY(-2px);
+  }
+
+  /* 按压效果 */
+  .press-effect {
+    @apply transition-transform duration-150 active:scale-95;
+  }
+
+  /* 渐变文字 - 更亮眼 */
+  .text-gradient {
+    @apply bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent;
+  }
+
+  /* 面板标题栏 - 暗色版 */
+  .panel-header {
+    @apply flex items-center justify-between px-4 py-2.5 border-b border-zinc-700/50 bg-zinc-800/50;
+  }
+
+  /* 输入框统一样式 - 暗色版 */
+  .input-base {
+    @apply w-full px-3 py-2 text-sm rounded-xl border border-zinc-700 bg-zinc-800/80 text-zinc-100;
+    @apply focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 focus:outline-none;
+    @apply transition-all duration-200 placeholder:text-zinc-500;
+  }
+
+  .input-sm {
+    @apply w-full px-2 py-1.5 text-sm rounded-lg border border-zinc-700 bg-zinc-800/80 text-zinc-100;
+    @apply focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 focus:outline-none;
+    @apply transition-all duration-200 placeholder:text-zinc-500;
+  }
+
+  /* 卡片悬浮动效 */
+  .card-hover {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+  }
+
+  /* 脉冲发光边框 */
+  .pulse-border {
+    animation: pulse-border 2s ease-in-out infinite;
+  }
+}
+
+/* 动画关键帧 */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  background-size: 1000px 100%;
+}
+
+/* 脉冲发光边框动画 */
+@keyframes pulse-border {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+  }
+}
+
+/* 呼吸发光动画 */
+@keyframes breathe-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3), 0 0 40px rgba(147, 51, 234, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(59, 130, 246, 0.5), 0 0 80px rgba(147, 51, 234, 0.3);
+  }
+}
+
+.animate-breathe {
+  animation: breathe-glow 3s ease-in-out infinite;
+}
+
+/* 悬浮漂浮动画 */
+@keyframes hover-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float {
+  animation: hover-float 3s ease-in-out infinite;
+}
+
+/* 边框流光动画 */
+@keyframes border-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-border-flow {
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899, #3b82f6);
+  background-size: 300% 100%;
+  animation: border-flow 3s linear infinite;
+}
