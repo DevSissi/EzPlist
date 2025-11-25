@@ -34,15 +34,15 @@ interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'size' | 'children
 }
 
 /**
- * 变体样式映射 - 暗色主题
+ * 变体样式映射 - 深海蓝紫主题
  */
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-400 hover:to-purple-500 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50',
+    'bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-500 text-white hover:from-indigo-400 hover:via-purple-400 hover:to-cyan-400 shadow-lg shadow-indigo-500/40 hover:shadow-indigo-500/60',
   secondary:
-    'bg-zinc-800/80 text-zinc-200 hover:bg-zinc-700/80 border border-zinc-700/50 shadow-md hover:border-zinc-600',
+    'bg-slate-700/60 text-slate-200 hover:bg-slate-600/60 border border-indigo-500/30 shadow-md hover:border-indigo-400/50',
   ghost:
-    'bg-transparent text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50',
+    'bg-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-700/50',
   danger:
     'bg-gradient-to-r from-red-500 to-pink-600 text-white hover:from-red-400 hover:to-pink-500 shadow-lg shadow-red-500/30 hover:shadow-red-500/50',
 }
@@ -81,7 +81,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         transition={{ type: 'spring', stiffness: 400, damping: 17 }}
         className={cn(
           'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-300',
-          'focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-zinc-900',
+          'focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 focus:ring-offset-slate-900',
           'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none',
           variantStyles[variant],
           sizeStyles[size],

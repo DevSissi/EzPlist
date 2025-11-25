@@ -408,13 +408,13 @@ export function ComposeCanvas() {
   const bounds = getCanvasBounds()
 
   return (
-    <div className="h-full flex flex-col bg-violet-950/40 backdrop-blur-xl rounded-xl border border-violet-500/20 overflow-hidden shadow-lg shadow-violet-900/20">
+    <div className="h-full flex flex-col bg-slate-800/50 backdrop-blur-xl rounded-xl border border-indigo-500/20 overflow-hidden shadow-lg shadow-slate-900/30">
       {/* 工具栏 */}
-      <div className="flex-shrink-0 flex items-center justify-between px-3 py-2 border-b border-violet-500/20 bg-violet-900/30">
+      <div className="flex-shrink-0 flex items-center justify-between px-3 py-2 border-b border-indigo-500/20 bg-slate-700/50">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-violet-200">合成画布</span>
+          <span className="text-sm font-medium text-slate-200">合成画布</span>
           {canvasSprites.length > 0 && (
-            <span className="text-xs text-violet-400">
+            <span className="text-xs text-slate-400">
               ({canvasSprites.length} 个精灵, {selectedIds.size} 选中)
             </span>
           )}
@@ -430,7 +430,7 @@ export function ComposeCanvas() {
               onClick={() => setScale(scale - 0.2)}
               title="缩小"
             />
-            <span className="text-xs text-violet-400 w-12 text-center">
+            <span className="text-xs text-slate-400 w-12 text-center">
               {Math.round(scale * 100)}%
             </span>
             <Button
@@ -487,7 +487,7 @@ export function ComposeCanvas() {
 
           {/* 对齐工具 */}
           {selectedIds.size >= 2 && (
-            <div className="flex items-center gap-0.5 ml-2 pl-2 border-l border-violet-500/30">
+            <div className="flex items-center gap-0.5 ml-2 pl-2 border-l border-indigo-500/30">
               <Button
                 variant="ghost"
                 size="sm"
@@ -573,6 +573,7 @@ export function ComposeCanvas() {
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
+        onContextMenu={(e) => e.preventDefault()}
       >
         {/* 可变换的画布 */}
         <div
@@ -632,7 +633,7 @@ export function ComposeCanvas() {
           {/* 框选矩形 */}
           {isSelecting && selectionRect && (
             <div
-              className="absolute border-2 border-violet-500 bg-violet-500/10 pointer-events-none"
+              className="absolute border-2 border-indigo-500 bg-indigo-500/10 pointer-events-none"
               style={{
                 left: selectionRect.x,
                 top: selectionRect.y,
@@ -650,17 +651,17 @@ export function ComposeCanvas() {
             animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 3, repeat: Infinity }}
           >
-            <div className="text-center text-violet-400/60">
+            <div className="text-center text-slate-400/60">
               <Grid3X3 className="w-16 h-16 mx-auto mb-4 opacity-30" />
               <p className="text-sm">从左侧添加精灵到画布</p>
-              <p className="text-xs mt-1 text-violet-500/50">拖拽摆放位置，自动吸附对齐</p>
+              <p className="text-xs mt-1 text-slate-500/50">拖拽摆放位置，自动吸附对齐</p>
             </div>
           </motion.div>
         )}
 
         {/* 画布信息 */}
         {canvasSprites.length > 0 && (
-          <div className="absolute bottom-2 left-2 px-2 py-1 bg-violet-900/70 border border-violet-500/30 backdrop-blur-sm rounded text-xs text-violet-200">
+          <div className="absolute bottom-2 left-2 px-2 py-1 bg-slate-800/70 border border-indigo-500/30 backdrop-blur-sm rounded text-xs text-slate-200">
             画布尺寸: {bounds.width} × {bounds.height}
           </div>
         )}
@@ -689,8 +690,8 @@ function SpriteItem({ canvasSprite, isSelected, onMouseDown }: SpriteItemProps) 
     <motion.div
       className={`absolute cursor-move select-none ${
         isSelected
-          ? 'ring-2 ring-violet-500 ring-offset-1 ring-offset-transparent'
-          : 'hover:ring-2 hover:ring-violet-400/50'
+          ? 'ring-2 ring-indigo-500 ring-offset-1 ring-offset-transparent'
+          : 'hover:ring-2 hover:ring-indigo-400/50'
       }`}
       style={{
         left: x,
@@ -711,7 +712,7 @@ function SpriteItem({ canvasSprite, isSelected, onMouseDown }: SpriteItemProps) 
 
       {/* 选中时显示尺寸信息 */}
       {isSelected && (
-        <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-violet-600 rounded text-xs text-white whitespace-nowrap shadow-lg">
+        <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-indigo-600 rounded text-xs text-white whitespace-nowrap shadow-lg">
           {sprite.width} × {sprite.height}
         </div>
       )}

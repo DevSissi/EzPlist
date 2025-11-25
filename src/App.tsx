@@ -27,10 +27,10 @@ function App() {
 
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-dark-gradient">
-      {/* 背景装饰 - 紫色流动光晕 */}
+      {/* 背景装饰 - 深海蓝紫光晕 */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <motion.div 
-          className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-violet-500/15 rounded-full blur-[100px]"
+          className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[100px]"
           animate={{ 
             x: [0, 50, 0, -50, 0],
             y: [0, 30, -30, 30, 0],
@@ -39,7 +39,7 @@ function App() {
           transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div 
-          className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-purple-600/15 rounded-full blur-[120px]"
+          className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[120px]"
           animate={{ 
             x: [0, -40, 40, 0],
             y: [0, -40, 20, 0],
@@ -48,10 +48,10 @@ function App() {
           transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div 
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-fuchsia-500/10 rounded-full blur-[80px]"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-cyan-500/5 rounded-full blur-[80px]"
           animate={{ 
             scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3]
+            opacity: [0.2, 0.4, 0.2]
           }}
           transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
         />
@@ -62,7 +62,7 @@ function App() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="relative z-10 flex-shrink-0 flex items-center justify-between px-5 py-3 border-b border-violet-500/20 bg-violet-950/50 backdrop-blur-xl"
+        className="relative z-10 flex-shrink-0 flex items-center justify-between px-5 py-3 border-b border-indigo-500/20 bg-slate-900/80 backdrop-blur-xl"
       >
         <motion.div 
           className="flex items-center gap-3"
@@ -70,12 +70,12 @@ function App() {
           transition={{ type: 'spring', stiffness: 400 }}
         >
           <motion.div 
-            className="w-10 h-10 bg-gradient-to-br from-violet-500 to-fuchsia-600 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/30"
+            className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/30"
             animate={{ 
               boxShadow: [
-                '0 10px 15px -3px rgba(139, 92, 246, 0.3)',
-                '0 10px 25px -3px rgba(192, 132, 252, 0.4)',
-                '0 10px 15px -3px rgba(139, 92, 246, 0.3)',
+                '0 10px 15px -3px rgba(99, 102, 241, 0.3)',
+                '0 10px 25px -3px rgba(129, 140, 248, 0.4)',
+                '0 10px 15px -3px rgba(99, 102, 241, 0.3)',
               ]
             }}
             transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
@@ -83,10 +83,10 @@ function App() {
             <Package className="w-5 h-5 text-white" />
           </motion.div>
           <div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-violet-300 via-fuchsia-300 to-pink-300 bg-clip-text text-transparent">
+            <h1 className="text-xl font-bold bg-gradient-to-r from-indigo-300 via-purple-300 to-cyan-300 bg-clip-text text-transparent">
               EzPlist
             </h1>
-            <p className="text-xs text-violet-400/80">
+            <p className="text-xs text-slate-400">
               精灵图管理工具 (Sprite Sheet Manager)
             </p>
           </div>
@@ -95,15 +95,15 @@ function App() {
         {/* 模式切换 + 状态统计 */}
         <div className="flex items-center gap-4">
           {/* 模式切换按钮 */}
-          <div className="flex bg-violet-900/40 rounded-xl p-1 shadow-lg border border-violet-500/20">
+          <div className="flex bg-slate-800/60 rounded-xl p-1 shadow-lg border border-indigo-500/20">
             <motion.button
               onClick={() => setMode('split')}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
                 mode === 'split'
-                  ? 'bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-lg shadow-violet-500/30'
-                  : 'text-violet-400 hover:text-violet-200 hover:bg-violet-800/50'
+                  ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg shadow-indigo-500/30'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
               }`}
             >
               <Scissors className="w-4 h-4" />
@@ -115,8 +115,8 @@ function App() {
               whileTap={{ scale: 0.98 }}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
                 mode === 'merge'
-                  ? 'bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white shadow-lg shadow-fuchsia-500/30'
-                  : 'text-violet-400 hover:text-violet-200 hover:bg-violet-800/50'
+                  ? 'bg-gradient-to-r from-purple-500 to-cyan-500 text-white shadow-lg shadow-purple-500/30'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
               }`}
             >
               <PlusSquare className="w-4 h-4" />
@@ -150,15 +150,15 @@ function App() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <div className="flex bg-violet-900/40 rounded-xl p-1 shadow-lg border border-violet-500/20">
+            <div className="flex bg-slate-800/60 rounded-xl p-1 shadow-lg border border-indigo-500/20">
               <motion.button
                 onClick={() => setSplitSubMode('simple')}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 ${
                   splitSubMode === 'simple'
-                    ? 'bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-md shadow-violet-500/30'
-                    : 'text-violet-400 hover:text-violet-200 hover:bg-violet-800/50'
+                    ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md shadow-indigo-500/30'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
                 }`}
               >
                 <Scissors className="w-3.5 h-3.5" />
@@ -170,8 +170,8 @@ function App() {
                 whileTap={{ scale: 0.98 }}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 ${
                   splitSubMode === 'multi-region'
-                    ? 'bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-md shadow-violet-500/30'
-                    : 'text-violet-400 hover:text-violet-200 hover:bg-violet-800/50'
+                    ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md shadow-indigo-500/30'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
                 }`}
               >
                 <Grid3X3 className="w-3.5 h-3.5" />
@@ -228,13 +228,13 @@ interface StatBadgeProps {
 function StatBadge({ icon, label, value }: StatBadgeProps) {
   return (
     <motion.div 
-      className="flex items-center gap-2 px-3 py-1.5 bg-violet-900/50 backdrop-blur-sm rounded-full border border-violet-500/30 shadow-lg"
-      whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(139, 92, 246, 0.3)' }}
+      className="flex items-center gap-2 px-3 py-1.5 bg-slate-800/60 backdrop-blur-sm rounded-full border border-indigo-500/30 shadow-lg"
+      whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(99, 102, 241, 0.3)' }}
       transition={{ type: 'spring', stiffness: 400 }}
     >
-      <span className="text-violet-400">{icon}</span>
-      <span className="text-xs text-violet-400/80">{label}</span>
-      <span className="text-sm font-semibold text-violet-100">{value}</span>
+      <span className="text-indigo-400">{icon}</span>
+      <span className="text-xs text-slate-400">{label}</span>
+      <span className="text-sm font-semibold text-slate-100">{value}</span>
     </motion.div>
   )
 }

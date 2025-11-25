@@ -34,6 +34,10 @@ export function SplitView() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(1)
+  const [offsetX, setOffsetX] = useState(0)
+  const [offsetY, setOffsetY] = useState(0)
+  const [isPanning, setIsPanning] = useState(false)
+  const [panStart, setPanStart] = useState({ x: 0, y: 0 })
   const [exportSuccess, setExportSuccess] = useState(false)
   const [renamePng, setRenamePng] = useState(true) // 默认开启重命名
   const [previewExpanded, setPreviewExpanded] = useState(false)
@@ -45,6 +49,32 @@ export function SplitView() {
     e.preventDefault()
     const delta = e.deltaY > 0 ? -0.1 : 0.1
     setScale(s => Math.max(0.1, Math.min(4, s + delta)))
+  }, [])
+
+  /**
+   * 鼠标按下开始拖拽
+   */
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if (e.button === 0 || e.button === 1) { // 左键或中键
+      setIsPanning(true)
+      setPanStart({ x: e.clientX - offsetX, y: e.clientY - offsetY })
+    }
+  }, [offsetX, offsetY])
+
+  /**
+   * 鼠标移动拖拽画布
+   */
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isPanning) return
+    setOffsetX(e.clientX - panStart.x)
+    setOffsetY(e.clientY - panStart.y)
+  }, [isPanning, panStart])
+
+  /**
+   * 鼠标释放结束拖拽
+   */
+  const handleMouseUp = useCallback(() => {
+    setIsPanning(false)
   }, [])
 
   const {
@@ -225,28 +255,28 @@ export function SplitView() {
   return (
     <div className="h-full flex gap-2">
       {/* 左侧：切分设置面板 */}
-      <div className="w-52 flex-shrink-0 flex flex-col bg-violet-950/40 backdrop-blur-xl rounded-xl border border-violet-500/20 overflow-hidden shadow-lg shadow-violet-900/20">
-        <div className="flex items-center gap-2 px-3 py-1.5 border-b border-violet-500/20 bg-violet-900/30">
-          <Settings className="w-4 h-4 text-violet-400" />
-          <h3 className="text-xs font-semibold text-violet-200">切分设置</h3>
+      <div className="w-52 flex-shrink-0 flex flex-col bg-slate-800/60 backdrop-blur-xl rounded-xl border border-indigo-500/20 overflow-hidden shadow-lg shadow-slate-900/30">
+        <div className="flex items-center gap-2 px-3 py-1.5 border-b border-indigo-500/20 bg-slate-700/50">
+          <Settings className="w-4 h-4 text-indigo-400" />
+          <h3 className="text-xs font-semibold text-slate-200">切分设置</h3>
         </div>
 
         <div className="flex-1 overflow-y-auto p-2 space-y-2 scrollbar-thin">
           {/* 行列设置 */}
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-violet-400">网格设置</label>
+            <label className="text-xs font-medium text-indigo-400">网格设置</label>
             <div className="grid grid-cols-2 gap-1.5">
               <div>
-                <span className="text-xs text-violet-500">行数</span>
+                <span className="text-xs text-slate-500">行数</span>
                 <input type="number" min={1} max={100} value={config.rows}
                   onChange={(e) => updateConfig({ rows: Math.max(1, parseInt(e.target.value) || 1) })}
-                  className="w-full px-1.5 py-1 text-xs rounded-lg border border-violet-700 bg-violet-900/80 text-violet-200" />
+                  className="w-full px-1.5 py-1 text-xs rounded-lg border border-slate-600 bg-slate-700/80 text-slate-200" />
               </div>
               <div>
-                <span className="text-xs text-violet-500">列数</span>
+                <span className="text-xs text-slate-500">列数</span>
                 <input type="number" min={1} max={100} value={config.cols}
                   onChange={(e) => updateConfig({ cols: Math.max(1, parseInt(e.target.value) || 1) })}
-                  className="w-full px-1.5 py-1 text-xs rounded-lg border border-violet-700 bg-violet-900/80 text-violet-200" />
+                  className="w-full px-1.5 py-1 text-xs rounded-lg border border-slate-600 bg-slate-700/80 text-slate-200" />
               </div>
             </div>
             {spritesheet?.autoDetect && (
@@ -259,38 +289,38 @@ export function SplitView() {
 
           {/* 帧尺寸 */}
           {splitResult && (
-            <div className="p-2 bg-violet-900/80 rounded-lg text-xs text-violet-400 border border-violet-700/50">
-              <p>帧尺寸: <span className="text-violet-200">{splitResult.frameWidth} × {splitResult.frameHeight}</span></p>
-              <p>总帧数: <span className="text-violet-200">{splitResult.totalFrames}</span></p>
+            <div className="p-2 bg-slate-700/60 rounded-lg text-xs text-slate-400 border border-slate-600/50">
+              <p>帧尺寸: <span className="text-slate-200">{splitResult.frameWidth} × {splitResult.frameHeight}</span></p>
+              <p>总帧数: <span className="text-slate-200">{splitResult.totalFrames}</span></p>
             </div>
           )}
 
           {/* 命名设置 */}
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-violet-400">帧命名</label>
+            <label className="text-xs font-medium text-indigo-400">帧命名</label>
             <div>
-              <span className="text-xs text-violet-500">前缀</span>
+              <span className="text-xs text-slate-500">前缀</span>
               <input type="text" value={config.namePrefix}
                 onChange={(e) => updateConfig({ namePrefix: e.target.value || 'frame' })}
-                className="w-full px-1.5 py-1 text-xs rounded-lg border border-violet-700 bg-violet-900/80 text-violet-200" placeholder="frame" />
+                className="w-full px-1.5 py-1 text-xs rounded-lg border border-slate-600 bg-slate-700/80 text-slate-200" placeholder="frame" />
             </div>
             <div>
-              <span className="text-xs text-violet-500">起始编号</span>
+              <span className="text-xs text-slate-500">起始编号</span>
               <input type="number" min={0} value={config.startIndex ?? 1}
                 onChange={(e) => updateConfig({ startIndex: parseInt(e.target.value) || 1 })}
-                className="w-full px-1.5 py-1 text-xs rounded-lg border border-violet-700 bg-violet-900/80 text-violet-200" />
+                className="w-full px-1.5 py-1 text-xs rounded-lg border border-slate-600 bg-slate-700/80 text-slate-200" />
             </div>
           </div>
         </div>
       </div>
 
       {/* 中间：画布区域 */}
-      <div className="flex-1 flex flex-col bg-violet-950/40 backdrop-blur-xl rounded-xl border border-violet-700/50 overflow-hidden">
+      <div className="flex-1 flex flex-col bg-slate-800/50 backdrop-blur-xl rounded-xl border border-indigo-500/20 overflow-hidden">
         {/* 工具栏 */}
-        <div className="flex items-center justify-between px-3 py-1.5 border-b border-zinc-700/50 bg-violet-900/50">
+        <div className="flex items-center justify-between px-3 py-1.5 border-b border-indigo-500/20 bg-slate-700/50">
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" icon={<ZoomOut className="w-4 h-4" />} onClick={() => setScale(s => Math.max(0.1, s - 0.1))} />
-            <span className="text-xs text-violet-400 w-10 text-center">{Math.round(scale * 100)}%</span>
+            <span className="text-xs text-slate-400 w-10 text-center">{Math.round(scale * 100)}%</span>
             <Button variant="ghost" size="sm" icon={<ZoomIn className="w-4 h-4" />} onClick={() => setScale(s => Math.min(4, s + 0.1))} />
           </div>
           <Button variant="primary" size="sm" icon={<FolderOpen className="w-4 h-4" />} onClick={handleImport} loading={isLoading}>
@@ -299,19 +329,19 @@ export function SplitView() {
         </div>
 
         {/* 画布预览 */}
-        <div ref={containerRef} className="flex-1 overflow-auto flex items-center justify-center checkerboard p-4" onWheel={handleWheel}>
+        <div ref={containerRef} className={`flex-1 overflow-hidden flex items-center justify-center checkerboard p-4 ${isPanning ? 'cursor-grabbing' : 'cursor-grab'}`} onWheel={handleWheel} onContextMenu={(e) => e.preventDefault()} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
           {!spritesheet ? (
             <motion.div 
-              className="text-center text-violet-500"
+              className="text-center text-indigo-400"
               animate={{ y: -6 }}
               transition={{ duration: 1.5, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' }}
             >
               <Upload className="w-16 h-16 mx-auto mb-4 opacity-50" />
-              <p className="text-lg font-medium mb-2 text-violet-400">导入精灵图集</p>
+              <p className="text-lg font-medium mb-2 text-slate-300">导入精灵图集</p>
               <p className="text-sm">点击上方按钮选择图集</p>
             </motion.div>
           ) : (
-            <motion.canvas ref={canvasRef} style={{ transform: `scale(${scale})`, transformOrigin: 'center', imageRendering: scale > 1 ? 'pixelated' : 'auto' }} className="shadow-2xl rounded-lg" />
+            <motion.canvas ref={canvasRef} style={{ transform: `translate(${offsetX}px, ${offsetY}px) scale(${scale})`, transformOrigin: 'center', imageRendering: scale > 1 ? 'pixelated' : 'auto' }} className="shadow-2xl rounded-lg" />
           )}
         </div>
 
@@ -348,10 +378,10 @@ export function SplitView() {
         )}
 
         {/* 导出设置 */}
-        <div className="flex-1 flex flex-col bg-violet-950/40 backdrop-blur-xl rounded-xl border border-violet-700/50 overflow-hidden">
-          <div className="flex items-center gap-2 px-3 py-1.5 border-b border-zinc-700/50 bg-violet-900/50">
-            <Download className="w-4 h-4 text-violet-400" />
-            <h3 className="text-xs font-semibold text-violet-300">导出设置</h3>
+        <div className="flex-1 flex flex-col bg-slate-800/60 backdrop-blur-xl rounded-xl border border-indigo-500/20 overflow-hidden">
+          <div className="flex items-center gap-2 px-3 py-1.5 border-b border-indigo-500/20 bg-slate-700/50">
+            <Download className="w-4 h-4 text-indigo-400" />
+            <h3 className="text-xs font-semibold text-slate-200">导出设置</h3>
           </div>
           
           <div className="flex-1 p-2 space-y-2 overflow-y-auto scrollbar-thin">
@@ -363,8 +393,8 @@ export function SplitView() {
             )}
 
             {/* 导出选项 */}
-            <label className="flex items-center justify-between cursor-pointer p-2 bg-violet-900/80 rounded-lg border border-violet-700/50">
-              <span className="text-xs text-violet-400">同步重命名 PNG</span>
+            <label className="flex items-center justify-between cursor-pointer p-2 bg-slate-700/60 rounded-lg border border-slate-600/50">
+              <span className="text-xs text-slate-400">同步重命名 PNG</span>
               <button onClick={() => setRenamePng(!renamePng)}
                 className={`w-8 h-4 rounded-full transition-colors relative ${renamePng ? 'bg-blue-500' : 'bg-zinc-600'}`}>
                 <span className={`absolute top-0.5 w-3 h-3 bg-white rounded-full shadow transition-transform ${renamePng ? 'left-4' : 'left-0.5'}`} />
@@ -374,20 +404,20 @@ export function SplitView() {
             {/* 帧预览列表 */}
             {splitResult && splitResult.frames.length > 0 && (
               <div className="space-y-1">
-                <label className="text-xs font-medium text-violet-400">帧列表</label>
-                <div className="max-h-24 overflow-y-auto scrollbar-thin text-xs bg-violet-900/80 rounded-lg p-1.5 space-y-0.5 border border-violet-700/50">
+                <label className="text-xs font-medium text-indigo-400">帧列表</label>
+                <div className="max-h-24 overflow-y-auto scrollbar-thin text-xs bg-slate-700/60 rounded-lg p-1.5 space-y-0.5 border border-slate-600/50">
                   {splitResult.frames.slice(0, 8).map((frame, i) => (
-                    <div key={i} className="text-violet-400 truncate">{frame.name}</div>
+                    <div key={i} className="text-slate-400 truncate">{frame.name}</div>
                   ))}
                   {splitResult.frames.length > 8 && (
-                    <div className="text-violet-500">... +{splitResult.frames.length - 8}</div>
+                    <div className="text-slate-500">... +{splitResult.frames.length - 8}</div>
                   )}
                 </div>
               </div>
             )}
           </div>
 
-          <div className="flex-shrink-0 p-2 border-t border-zinc-700/50 bg-violet-900/30 space-y-1.5">
+          <div className="flex-shrink-0 p-2 border-t border-indigo-500/20 bg-slate-700/30 space-y-1.5">
             <Button variant="primary" size="sm" icon={<Download className="w-4 h-4" />} onClick={handleExport}
               disabled={!splitResult || splitResult.frames.length === 0} loading={isLoading} className="w-full">
               导出 Plist

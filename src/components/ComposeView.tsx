@@ -127,18 +127,18 @@ export function ComposeView() {
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
-        className="w-56 flex-shrink-0 flex flex-col bg-violet-950/40 backdrop-blur-xl rounded-xl border border-violet-500/20 overflow-hidden shadow-lg shadow-violet-900/20"
+        className="w-56 flex-shrink-0 flex flex-col bg-slate-800/60 backdrop-blur-xl rounded-xl border border-indigo-500/20 overflow-hidden shadow-lg shadow-slate-900/30"
       >
         {/* 标题栏 */}
-        <div className="flex items-center justify-between px-3 py-2 border-b border-violet-500/20 bg-violet-900/30">
-          <span className="text-sm font-medium text-violet-200">精灵列表</span>
-          <span className="text-xs text-violet-400">
+        <div className="flex items-center justify-between px-3 py-2 border-b border-indigo-500/20 bg-slate-700/50">
+          <span className="text-sm font-medium text-slate-200">精灵列表</span>
+          <span className="text-xs text-slate-400">
             {canvasSprites.length} 个
           </span>
         </div>
 
         {/* 工具栏 */}
-        <div className="flex items-center gap-1 px-2 py-2 border-b border-violet-500/10">
+        <div className="flex items-center gap-1 px-2 py-2 border-b border-indigo-500/10">
           <Button
             variant="ghost"
             size="sm"
@@ -163,7 +163,7 @@ export function ComposeView() {
         <div className="flex-1 overflow-auto p-2 space-y-1 scrollbar-thin">
           {canvasSprites.length === 0 ? (
             <motion.div 
-              className="h-full flex flex-col items-center justify-center text-violet-400/60"
+              className="h-full flex flex-col items-center justify-center text-slate-400/60"
               animate={{ y: [0, -5, 0] }}
               transition={{ duration: 3, repeat: Infinity }}
             >
@@ -204,18 +204,18 @@ export function ComposeView() {
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.2 }}
-        className="w-56 flex-shrink-0 flex flex-col bg-violet-950/40 backdrop-blur-xl rounded-xl border border-violet-500/20 overflow-hidden shadow-lg shadow-violet-900/20"
+        className="w-56 flex-shrink-0 flex flex-col bg-slate-800/60 backdrop-blur-xl rounded-xl border border-indigo-500/20 overflow-hidden shadow-lg shadow-slate-900/30"
       >
         {/* 标题栏 */}
-        <div className="flex items-center justify-between px-3 py-2 border-b border-violet-500/20 bg-violet-900/30">
-          <span className="text-sm font-medium text-violet-200">导出设置</span>
+        <div className="flex items-center justify-between px-3 py-2 border-b border-indigo-500/20 bg-slate-700/50">
+          <span className="text-sm font-medium text-slate-200">导出设置</span>
         </div>
 
         {/* 导出配置 */}
         <div className="flex-1 p-3 space-y-4">
           {/* 文件名 */}
           <div>
-            <label className="block text-xs text-violet-400 mb-1">
+            <label className="block text-xs text-slate-400 mb-1">
               输出文件名 (Output Name)
             </label>
             <input
@@ -223,19 +223,19 @@ export function ComposeView() {
               value={outputName}
               onChange={(e) => setOutputName(e.target.value)}
               placeholder="spritesheet"
-              className="w-full px-2 py-1.5 text-sm border border-violet-500/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500/50 bg-violet-900/40 text-violet-100 placeholder:text-violet-500"
+              className="w-full px-2 py-1.5 text-sm border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/50 bg-slate-700/60 text-slate-100 placeholder:text-slate-500"
             />
           </div>
 
           {/* 画布信息 */}
-          <div className="p-2 bg-violet-900/30 border border-violet-500/20 rounded-lg space-y-1 text-xs">
+          <div className="p-2 bg-slate-700/40 border border-slate-600/50 rounded-lg space-y-1 text-xs">
             <div className="flex justify-between">
-              <span className="text-violet-400">精灵数量:</span>
-              <span className="font-medium text-violet-200">{canvasSprites.length}</span>
+              <span className="text-slate-400">精灵数量:</span>
+              <span className="font-medium text-slate-200">{canvasSprites.length}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-violet-400">选中数量:</span>
-              <span className="font-medium text-violet-200">{selectedIds.size}</span>
+              <span className="text-slate-400">选中数量:</span>
+              <span className="font-medium text-slate-200">{selectedIds.size}</span>
             </div>
             {canvasSprites.length > 0 && (
               <CanvasBoundsInfo />
@@ -296,9 +296,9 @@ export function ComposeView() {
         </div>
 
         {/* 使用说明 */}
-        <div className="p-3 border-t border-violet-500/20 bg-violet-900/20">
-          <h4 className="text-xs font-medium text-violet-300 mb-1">使用说明</h4>
-          <ul className="text-xs text-violet-400/70 space-y-0.5">
+        <div className="p-3 border-t border-indigo-500/20 bg-slate-700/30">
+          <h4 className="text-xs font-medium text-slate-300 mb-1">使用说明</h4>
+          <ul className="text-xs text-slate-400/70 space-y-0.5">
             <li>• 拖拽图片调整位置</li>
             <li>• 自动吸附对齐边缘</li>
             <li>• 方向键微调位置</li>
@@ -348,8 +348,8 @@ function SpriteListItem({
       exit={{ opacity: 0, scale: 0.9 }}
       className={`group flex items-center gap-2 p-1.5 rounded-lg cursor-pointer transition-all ${
         isSelected
-          ? 'bg-violet-600/30 border border-violet-500/50 shadow-md shadow-violet-500/10'
-          : 'hover:bg-violet-800/30 border border-transparent'
+          ? 'bg-indigo-600/30 border border-indigo-500/50 shadow-md shadow-indigo-500/10'
+          : 'hover:bg-slate-700/50 border border-transparent'
       }`}
       onClick={(e) => {
         if (e.ctrlKey || e.metaKey) {
@@ -370,10 +370,10 @@ function SpriteListItem({
 
       {/* 信息 */}
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-medium text-violet-200 truncate">
+        <p className="text-xs font-medium text-slate-200 truncate">
           {sprite.name}
         </p>
-        <p className="text-xs text-violet-400/70">
+        <p className="text-xs text-slate-400/70">
           {sprite.width}×{sprite.height}
         </p>
       </div>
@@ -401,8 +401,8 @@ function CanvasBoundsInfo() {
   return (
     <>
       <div className="flex justify-between">
-        <span className="text-violet-400">预计尺寸:</span>
-        <span className="font-medium text-violet-200">
+        <span className="text-slate-400">预计尺寸:</span>
+        <span className="font-medium text-slate-200">
           {bounds.width}×{bounds.height}
         </span>
       </div>

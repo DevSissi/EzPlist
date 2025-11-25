@@ -38,6 +38,10 @@ export function MultiRegionView() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(1)
+  const [offsetX, setOffsetX] = useState(0)
+  const [offsetY, setOffsetY] = useState(0)
+  const [isPanning, setIsPanning] = useState(false)
+  const [panStart, setPanStart] = useState({ x: 0, y: 0 })
   const [exportSuccess, setExportSuccess] = useState(false)
   const [editingRegionId, setEditingRegionId] = useState<string | null>(null)
   const [previewExpanded, setPreviewExpanded] = useState(false)
@@ -49,6 +53,32 @@ export function MultiRegionView() {
     e.preventDefault()
     const delta = e.deltaY > 0 ? -0.1 : 0.1
     setScale(s => Math.max(0.1, Math.min(4, s + delta)))
+  }, [])
+
+  /**
+   * 鼠标按下开始拖拽
+   */
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if (e.button === 0 || e.button === 1) {
+      setIsPanning(true)
+      setPanStart({ x: e.clientX - offsetX, y: e.clientY - offsetY })
+    }
+  }, [offsetX, offsetY])
+
+  /**
+   * 鼠标移动拖拽画布
+   */
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isPanning) return
+    setOffsetX(e.clientX - panStart.x)
+    setOffsetY(e.clientY - panStart.y)
+  }, [isPanning, panStart])
+
+  /**
+   * 鼠标释放结束拖拽
+   */
+  const handleMouseUp = useCallback(() => {
+    setIsPanning(false)
   }, [])
 
   const {
@@ -306,17 +336,17 @@ export function MultiRegionView() {
   return (
     <div className="h-full flex gap-2">
       {/* 左侧：区域设置面板 */}
-      <div className="w-52 flex-shrink-0 flex flex-col bg-violet-950/40 backdrop-blur-xl rounded-xl border border-violet-500/20 overflow-hidden">
-        <div className="flex items-center gap-2 px-3 py-1.5 border-b border-violet-500/20 bg-violet-900/50">
-          <Settings className="w-4 h-4 text-violet-400" />
-          <h3 className="text-xs font-semibold text-violet-300">区域设置</h3>
+      <div className="w-52 flex-shrink-0 flex flex-col bg-slate-800/60 backdrop-blur-xl rounded-xl border border-indigo-500/20 overflow-hidden">
+        <div className="flex items-center gap-2 px-3 py-1.5 border-b border-indigo-500/20 bg-slate-700/50">
+          <Settings className="w-4 h-4 text-indigo-400" />
+          <h3 className="text-xs font-semibold text-slate-200">区域设置</h3>
         </div>
 
         <div className="flex-1 flex flex-col min-h-0 p-2 space-y-2 overflow-y-auto">
           {/* 帧尺寸设置 */}
           {spritesheet && (
             <div className="flex-shrink-0 flex items-center gap-2">
-              <span className="text-xs text-violet-500 whitespace-nowrap">帧尺寸</span>
+              <span className="text-xs text-slate-500 whitespace-nowrap">帧尺寸</span>
               <input
                 type="number"
                 min={1}
@@ -326,9 +356,9 @@ export function MultiRegionView() {
                   setDefaultFrameSize(newWidth, defaultFrameSize.height)
                   regions.forEach(r => updateRegion(r.id, { frameWidth: newWidth }))
                 }}
-                className="w-12 px-1 py-0.5 text-xs rounded-lg border border-violet-500/20 bg-violet-900/80 text-violet-200"
+                className="w-12 px-1 py-0.5 text-xs rounded-lg border border-slate-600 bg-slate-700/80 text-slate-200"
               />
-              <span className="text-xs text-violet-500">×</span>
+              <span className="text-xs text-slate-500">×</span>
               <input
                 type="number"
                 min={1}
@@ -338,7 +368,7 @@ export function MultiRegionView() {
                   setDefaultFrameSize(defaultFrameSize.width, newHeight)
                   regions.forEach(r => updateRegion(r.id, { frameHeight: newHeight }))
                 }}
-                className="w-12 px-1 py-0.5 text-xs rounded-lg border border-violet-500/20 bg-violet-900/80 text-violet-200"
+                className="w-12 px-1 py-0.5 text-xs rounded-lg border border-slate-600 bg-slate-700/80 text-slate-200"
               />
             </div>
           )}
@@ -346,7 +376,7 @@ export function MultiRegionView() {
           {/* 区域列表标题 */}
           {spritesheet && (
             <div className="flex-shrink-0 flex items-center justify-between">
-              <label className="text-xs font-medium text-violet-400">区域列表</label>
+              <label className="text-xs font-medium text-indigo-400">区域列表</label>
               <Button
                 variant="ghost"
                 size="sm"
@@ -363,7 +393,7 @@ export function MultiRegionView() {
           {spritesheet && (
             <div className="flex-1 min-h-0 overflow-y-auto space-y-1">
               {regions.length === 0 ? (
-                <div className="text-xs text-violet-500 text-center py-2">
+                <div className="text-xs text-slate-500 text-center py-2">
                   {spritesheet.autoDetect ? (
                     <div className="space-y-1">
                       <p>点击添加创建区域</p>
@@ -401,12 +431,12 @@ export function MultiRegionView() {
       </div>
 
       {/* 中间：画布区域 */}
-      <div className="flex-1 flex flex-col bg-violet-950/40 backdrop-blur-xl rounded-xl border border-violet-500/20 overflow-hidden">
+      <div className="flex-1 flex flex-col bg-slate-800/50 backdrop-blur-xl rounded-xl border border-indigo-500/20 overflow-hidden">
         {/* 工具栏 */}
-        <div className="flex items-center justify-between px-3 py-1.5 border-b border-violet-500/20 bg-violet-900/50">
+        <div className="flex items-center justify-between px-3 py-1.5 border-b border-indigo-500/20 bg-slate-700/50">
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" icon={<ZoomOut className="w-4 h-4" />} onClick={() => setScale(s => Math.max(0.1, s - 0.1))} />
-            <span className="text-xs text-violet-400 w-10 text-center">{Math.round(scale * 100)}%</span>
+            <span className="text-xs text-slate-400 w-10 text-center">{Math.round(scale * 100)}%</span>
             <Button variant="ghost" size="sm" icon={<ZoomIn className="w-4 h-4" />} onClick={() => setScale(s => Math.min(4, s + 0.1))} />
           </div>
           <Button variant="primary" size="sm" icon={<FolderOpen className="w-4 h-4" />} onClick={handleImport} loading={isLoading}>
@@ -415,19 +445,19 @@ export function MultiRegionView() {
         </div>
 
         {/* 画布预览 */}
-        <div ref={containerRef} className="flex-1 overflow-auto flex items-center justify-center checkerboard p-4" onWheel={handleWheel}>
+        <div ref={containerRef} className={`flex-1 overflow-hidden flex items-center justify-center checkerboard p-4 ${isPanning ? 'cursor-grabbing' : 'cursor-grab'}`} onWheel={handleWheel} onContextMenu={(e) => e.preventDefault()} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
           {!spritesheet ? (
             <motion.div 
-              className="text-center text-violet-500"
+              className="text-center text-indigo-400"
               animate={{ y: -6 }}
               transition={{ duration: 1.5, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' }}
             >
               <Upload className="w-16 h-16 mx-auto mb-4 opacity-50" />
-              <p className="text-lg font-medium mb-2 text-violet-400">导入精灵图集</p>
+              <p className="text-lg font-medium mb-2 text-slate-300">导入精灵图集</p>
               <p className="text-sm">点击上方按钮选择图集</p>
             </motion.div>
           ) : (
-            <motion.canvas ref={canvasRef} style={{ transform: `scale(${scale})`, transformOrigin: 'center', imageRendering: scale > 1 ? 'pixelated' : 'auto' }} className="shadow-lg cursor-crosshair" />
+            <motion.canvas ref={canvasRef} style={{ transform: `translate(${offsetX}px, ${offsetY}px) scale(${scale})`, transformOrigin: 'center', imageRendering: scale > 1 ? 'pixelated' : 'auto' }} className="shadow-lg" />
           )}
         </div>
 
@@ -464,10 +494,10 @@ export function MultiRegionView() {
         )}
 
         {/* 导出设置 */}
-        <div className="flex-1 flex flex-col bg-violet-950/40 backdrop-blur-xl rounded-xl border border-violet-500/20 overflow-hidden">
-          <div className="flex items-center gap-2 px-3 py-1.5 border-b border-violet-500/20 bg-violet-900/50">
-            <Download className="w-4 h-4 text-violet-400" />
-            <h3 className="text-xs font-semibold text-violet-300">导出设置</h3>
+        <div className="flex-1 flex flex-col bg-slate-800/60 backdrop-blur-xl rounded-xl border border-indigo-500/20 overflow-hidden">
+          <div className="flex items-center gap-2 px-3 py-1.5 border-b border-indigo-500/20 bg-slate-700/50">
+            <Download className="w-4 h-4 text-indigo-400" />
+            <h3 className="text-xs font-semibold text-slate-200">导出设置</h3>
           </div>
           
           <div className="flex-1 p-2 space-y-2 overflow-y-auto scrollbar-thin">
@@ -482,14 +512,14 @@ export function MultiRegionView() {
             )}
             
             {regions.length > 0 && (
-              <div className="p-2 bg-violet-900/80 rounded-lg text-xs text-violet-400 border border-violet-500/20">
-                <p>已定义 <span className="text-violet-200">{regions.length}</span> 个区域</p>
-                <p>总计 <span className="text-violet-200">{regions.reduce((sum, r) => sum + (regionPreviews.get(r.id)?.totalFrames || r.frameCount), 0)}</span> 帧</p>
+              <div className="p-2 bg-slate-700/60 rounded-lg text-xs text-slate-400 border border-slate-600/50">
+                <p>已定义 <span className="text-slate-200">{regions.length}</span> 个区域</p>
+                <p>总计 <span className="text-slate-200">{regions.reduce((sum, r) => sum + (regionPreviews.get(r.id)?.totalFrames || r.frameCount), 0)}</span> 帧</p>
               </div>
             )}
           </div>
 
-          <div className="flex-shrink-0 p-2 border-t border-violet-500/20 bg-violet-900/30 space-y-1.5">
+          <div className="flex-shrink-0 p-2 border-t border-indigo-500/20 bg-slate-700/30 space-y-1.5">
             <Button variant="primary" size="sm" icon={<Download className="w-4 h-4" />} onClick={handleExport} disabled={regions.length === 0} loading={isLoading} className="w-full">
               批量导出 ({regions.length})
             </Button>
