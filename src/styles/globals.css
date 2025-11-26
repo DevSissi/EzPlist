@@ -2,55 +2,75 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 全局样式 - 深海蓝紫主题 */
+/* 
+ * Material Design 暗色主题配色系统
+ * 基于 Google Material Design Dark Theme 规范
+ */
 @layer base {
   :root {
-    --background: 232 33% 12%;
-    --foreground: 210 40% 96%;
-    --card: 232 33% 16%;
-    --card-hover: 232 33% 20%;
-    --border: 232 25% 28%;
-    --muted: 215 20% 65%;
-    --accent: 262 83% 58%;
-    --accent-secondary: 186 94% 42%;
+    /* 背景层级系统 (Elevation) */
+    --bg-base: #121212;      /* Level 0: 最底层 */
+    --bg-surface: #1e1e1e;   /* Level 1: 面板/侧边栏 */
+    --bg-elevated: #2a2a2a;  /* Level 2: 卡片/输入框 */
+    --bg-hover: #333333;     /* Level 3: 悬停状态 */
+    --bg-overlay: #3d3d3d;   /* Level 4: 弹出菜单 */
+    
+    /* 边框颜色 */
+    --border-subtle: #333333;   /* 微弱分隔 */
+    --border-default: #444444;  /* 默认边框 */
+    --border-strong: #555555;   /* 强调边框 */
+    
+    /* 文字颜色 */
+    --text-primary: #e4e4e7;    /* 87% 白 - 标题 */
+    --text-secondary: #a1a1aa;  /* 60% 白 - 正文 */
+    --text-tertiary: #71717a;   /* 38% 白 - 次要 */
+    --text-disabled: #52525b;   /* 禁用 */
+    
+    /* 强调色 */
+    --accent-primary: #6366f1;  /* Indigo */
+    --accent-hover: #818cf8;    /* Indigo lighter */
+    --accent-success: #22c55e;  /* Green */
+    --accent-warning: #eab308;  /* Yellow */
+    --accent-error: #ef4444;    /* Red */
   }
 
   * {
-    border-color: hsl(var(--border));
+    border-color: var(--border-default);
   }
 
   body {
-    @apply text-slate-100 antialiased;
+    color: var(--text-primary);
+    background: var(--bg-base);
     font-feature-settings: "rlig" 1, "calt" 1;
-    background: linear-gradient(135deg, #0f1729 0%, #1a1f3a 50%, #1e2444 100%);
-    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  /* 改进的文字渲染 */
+  /* 文字层级 */
   h1, h2, h3, h4, h5, h6 {
-    @apply text-slate-50 font-semibold;
+    color: var(--text-primary);
+    font-weight: 600;
   }
 }
 
-/* 全局滚动条样式 - 紫色主题 */
+/* 全局滚动条样式 - 低调灰色 */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(139, 92, 246, 0.1);
+  background: var(--bg-surface);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #8b5cf6 0%, #a855f7 50%, #c084fc 100%);
+  background: var(--border-strong);
   border-radius: 4px;
-  border: 2px solid rgba(15, 10, 30, 0.5);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #a855f7 0%, #c084fc 50%, #d8b4fe 100%);
+  background: #666666;
 }
 
 ::-webkit-scrollbar-corner {
@@ -65,17 +85,17 @@
   }
 
   .scrollbar-thin::-webkit-scrollbar-track {
-    background: rgba(139, 92, 246, 0.1);
+    background: var(--bg-surface);
     border-radius: 3px;
   }
 
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #8b5cf6, #a855f7);
+    background: var(--border-default);
     border-radius: 3px;
   }
 
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, #a855f7, #c084fc);
+    background: var(--border-strong);
   }
 
   .scrollbar-hidden::-webkit-scrollbar {
@@ -87,7 +107,7 @@
     scrollbar-width: none;
   }
 
-  /* 自动隐藏滚动条 - 仅在需要时显示 */
+  /* 自动隐藏滚动条 */
   .scrollbar-auto {
     overflow: auto;
   }
@@ -97,7 +117,7 @@
   }
   
   .scrollbar-auto:hover::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #8b5cf6, #a855f7);
+    background: var(--border-default);
   }
 
   /* 透明背景棋盘格 - 深海蓝紫版 */

@@ -21,7 +21,9 @@ import {
 } from 'lucide-react'
 import { Button } from './ui/Button'
 import { AnimationPreview, type FrameData } from './AnimationPreview'
+import { BackgroundSettings } from './BackgroundSettings'
 import { useMultiRegionStore } from '../store/multiRegionStore'
+import { useCanvasSettingsStore, getBackgroundStyle } from '../store/canvasSettingsStore'
 import {
   selectSpritesheetFile,
   importSpritesheet,
@@ -45,6 +47,9 @@ export function MultiRegionView() {
   const [exportSuccess, setExportSuccess] = useState(false)
   const [editingRegionId, setEditingRegionId] = useState<string | null>(null)
   const [previewExpanded, setPreviewExpanded] = useState(false)
+  
+  // 画布背景设置
+  const canvasSettings = useCanvasSettingsStore()
 
   /**
    * 滚轮缩放
@@ -246,15 +251,8 @@ export function MultiRegionView() {
       canvas.width = spritesheet.width
       canvas.height = spritesheet.height
 
-      // 绘制棋盘格背景
-      const size = 16
-      for (let y = 0; y < canvas.height; y += size) {
-        for (let x = 0; x < canvas.width; x += size) {
-          const isEven = ((x / size) + (y / size)) % 2 === 0
-          ctx.fillStyle = isEven ? '#e5e5e5' : '#f5f5f5'
-          ctx.fillRect(x, y, size, size)
-        }
-      }
+      // 清除画布（使用透明背景，由外层容器提供背景）
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
 
       // 绘制图片
       ctx.drawImage(img, 0, 0)
@@ -334,19 +332,19 @@ export function MultiRegionView() {
   }, [spritesheet])
 
   return (
-    <div className="h-full flex gap-2">
+    <div className="h-full flex gap-2 overflow-hidden">
       {/* 左侧：区域设置面板 */}
-      <div className="w-52 flex-shrink-0 flex flex-col bg-slate-800/60 backdrop-blur-xl rounded-xl border border-indigo-500/20 overflow-hidden">
-        <div className="flex items-center gap-2 px-3 py-1.5 border-b border-indigo-500/20 bg-slate-700/50">
-          <Settings className="w-4 h-4 text-indigo-400" />
-          <h3 className="text-xs font-semibold text-slate-200">区域设置</h3>
+      <div className="w-56 min-w-[224px] flex-shrink-0 flex flex-col rounded-xl overflow-hidden" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-default)' }}>
+        <div className="flex items-center gap-2 px-3 py-2" style={{ borderBottom: '1px solid var(--border-subtle)', background: 'var(--bg-elevated)' }}>
+          <Settings className="w-4 h-4" style={{ color: 'var(--accent-primary)' }} />
+          <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>区域设置</h3>
         </div>
 
         <div className="flex-1 flex flex-col min-h-0 p-2 space-y-2 overflow-y-auto">
           {/* 帧尺寸设置 */}
           {spritesheet && (
             <div className="flex-shrink-0 flex items-center gap-2">
-              <span className="text-xs text-slate-500 whitespace-nowrap">帧尺寸</span>
+              <span className="text-sm whitespace-nowrap" style={{ color: 'var(--text-secondary)' }}>帧尺寸</span>
               <input
                 type="number"
                 min={1}
@@ -356,9 +354,10 @@ export function MultiRegionView() {
                   setDefaultFrameSize(newWidth, defaultFrameSize.height)
                   regions.forEach(r => updateRegion(r.id, { frameWidth: newWidth }))
                 }}
-                className="w-12 px-1 py-0.5 text-xs rounded-lg border border-slate-600 bg-slate-700/80 text-slate-200"
+                className="w-16 px-2 py-1.5 text-sm rounded-lg focus:outline-none"
+                style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-default)', color: 'var(--text-primary)' }}
               />
-              <span className="text-xs text-slate-500">×</span>
+              <span className="text-sm" style={{ color: 'var(--text-tertiary)' }}>×</span>
               <input
                 type="number"
                 min={1}
@@ -368,7 +367,8 @@ export function MultiRegionView() {
                   setDefaultFrameSize(defaultFrameSize.width, newHeight)
                   regions.forEach(r => updateRegion(r.id, { frameHeight: newHeight }))
                 }}
-                className="w-12 px-1 py-0.5 text-xs rounded-lg border border-slate-600 bg-slate-700/80 text-slate-200"
+                className="w-16 px-2 py-1.5 text-sm rounded-lg focus:outline-none"
+                style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-default)', color: 'var(--text-primary)' }}
               />
             </div>
           )}
@@ -376,7 +376,7 @@ export function MultiRegionView() {
           {/* 区域列表标题 */}
           {spritesheet && (
             <div className="flex-shrink-0 flex items-center justify-between">
-              <label className="text-xs font-medium text-indigo-400">区域列表</label>
+              <label className="text-sm font-medium" style={{ color: 'var(--accent-primary)' }}>区域列表</label>
               <Button
                 variant="ghost"
                 size="sm"
@@ -391,7 +391,7 @@ export function MultiRegionView() {
 
           {/* 区域列表 */}
           {spritesheet && (
-            <div className="flex-1 min-h-0 overflow-y-auto space-y-1">
+            <div className="flex-1 min-h-[120px] overflow-y-auto space-y-1 scrollbar-thin">
               {regions.length === 0 ? (
                 <div className="text-xs text-slate-500 text-center py-2">
                   {spritesheet.autoDetect ? (
@@ -431,13 +431,15 @@ export function MultiRegionView() {
       </div>
 
       {/* 中间：画布区域 */}
-      <div className="flex-1 flex flex-col bg-slate-800/50 backdrop-blur-xl rounded-xl border border-indigo-500/20 overflow-hidden">
+      <div className="flex-1 flex flex-col rounded-xl overflow-hidden" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-default)' }}>
         {/* 工具栏 */}
-        <div className="flex items-center justify-between px-3 py-1.5 border-b border-indigo-500/20 bg-slate-700/50">
+        <div className="flex items-center justify-between px-3 py-2" style={{ borderBottom: '1px solid var(--border-subtle)', background: 'var(--bg-elevated)' }}>
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" icon={<ZoomOut className="w-4 h-4" />} onClick={() => setScale(s => Math.max(0.1, s - 0.1))} />
-            <span className="text-xs text-slate-400 w-10 text-center">{Math.round(scale * 100)}%</span>
+            <span className="text-sm w-12 text-center" style={{ color: 'var(--text-secondary)' }}>{Math.round(scale * 100)}%</span>
             <Button variant="ghost" size="sm" icon={<ZoomIn className="w-4 h-4" />} onClick={() => setScale(s => Math.min(4, s + 0.1))} />
+            <div className="w-px h-5 mx-1" style={{ background: 'var(--border-subtle)' }} />
+            <BackgroundSettings />
           </div>
           <Button variant="primary" size="sm" icon={<FolderOpen className="w-4 h-4" />} onClick={handleImport} loading={isLoading}>
             导入
@@ -445,16 +447,26 @@ export function MultiRegionView() {
         </div>
 
         {/* 画布预览 */}
-        <div ref={containerRef} className={`flex-1 overflow-hidden flex items-center justify-center checkerboard p-4 ${isPanning ? 'cursor-grabbing' : 'cursor-grab'}`} onWheel={handleWheel} onContextMenu={(e) => e.preventDefault()} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
+        <div 
+          ref={containerRef} 
+          className={`flex-1 overflow-hidden flex items-center justify-center p-4 ${isPanning ? 'cursor-grabbing' : 'cursor-grab'}`} 
+          style={getBackgroundStyle(canvasSettings)}
+          onWheel={handleWheel} 
+          onContextMenu={(e) => e.preventDefault()} 
+          onMouseDown={handleMouseDown} 
+          onMouseMove={handleMouseMove} 
+          onMouseUp={handleMouseUp} 
+          onMouseLeave={handleMouseUp}
+        >
           {!spritesheet ? (
             <motion.div 
-              className="text-center text-indigo-400"
+              className="text-center"
               animate={{ y: -6 }}
               transition={{ duration: 1.5, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' }}
             >
-              <Upload className="w-16 h-16 mx-auto mb-4 opacity-50" />
-              <p className="text-lg font-medium mb-2 text-slate-300">导入精灵图集</p>
-              <p className="text-sm">点击上方按钮选择图集</p>
+              <Upload className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--text-tertiary)' }} />
+              <p className="text-lg font-medium mb-2" style={{ color: 'var(--text-primary)' }}>导入精灵图集</p>
+              <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>点击上方按钮选择图集</p>
             </motion.div>
           ) : (
             <motion.canvas ref={canvasRef} style={{ transform: `translate(${offsetX}px, ${offsetY}px) scale(${scale})`, transformOrigin: 'center', imageRendering: scale > 1 ? 'pixelated' : 'auto' }} className="shadow-lg" />
@@ -479,7 +491,7 @@ export function MultiRegionView() {
       </div>
 
       {/* 右侧面板：动画预览 + 导出设置 */}
-      <div className="w-56 flex-shrink-0 flex flex-col gap-2">
+      <div className="w-56 min-w-[224px] flex-shrink-0 flex flex-col gap-2">
         {/* 动画预览 */}
         {selectedRegionId && regionPreviews.get(selectedRegionId) && spritesheet && (
           <AnimationPreview
@@ -494,32 +506,32 @@ export function MultiRegionView() {
         )}
 
         {/* 导出设置 */}
-        <div className="flex-1 flex flex-col bg-slate-800/60 backdrop-blur-xl rounded-xl border border-indigo-500/20 overflow-hidden">
-          <div className="flex items-center gap-2 px-3 py-1.5 border-b border-indigo-500/20 bg-slate-700/50">
-            <Download className="w-4 h-4 text-indigo-400" />
-            <h3 className="text-xs font-semibold text-slate-200">导出设置</h3>
+        <div className="flex-1 flex flex-col rounded-xl overflow-hidden" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-default)' }}>
+          <div className="flex items-center gap-2 px-3 py-2" style={{ borderBottom: '1px solid var(--border-subtle)', background: 'var(--bg-elevated)' }}>
+            <Download className="w-4 h-4" style={{ color: 'var(--accent-primary)' }} />
+            <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>导出设置</h3>
           </div>
           
           <div className="flex-1 p-2 space-y-2 overflow-y-auto scrollbar-thin">
             {spritesheet && (
-              <div className="p-2 bg-blue-900/30 border border-blue-700/30 rounded-lg text-xs space-y-1">
-                <p className="font-medium text-blue-300 truncate">{spritesheet.name}</p>
-                <p className="text-blue-400">{spritesheet.width} × {spritesheet.height}</p>
+              <div className="p-2 rounded-lg text-xs space-y-1" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                <p className="font-medium truncate" style={{ color: 'var(--text-primary)' }}>{spritesheet.name}</p>
+                <p style={{ color: 'var(--text-secondary)' }}>{spritesheet.width} × {spritesheet.height}</p>
                 {spritesheet.autoDetect && (
-                  <p className="text-blue-500">🎯 {spritesheet.autoDetect.frameWidth}×{spritesheet.autoDetect.frameHeight} ({spritesheet.autoDetect.rows}×{spritesheet.autoDetect.cols})</p>
+                  <p style={{ color: 'var(--accent-primary)' }}>🎯 {spritesheet.autoDetect.frameWidth}×{spritesheet.autoDetect.frameHeight} ({spritesheet.autoDetect.rows}×{spritesheet.autoDetect.cols})</p>
                 )}
               </div>
             )}
             
             {regions.length > 0 && (
-              <div className="p-2 bg-slate-700/60 rounded-lg text-xs text-slate-400 border border-slate-600/50">
-                <p>已定义 <span className="text-slate-200">{regions.length}</span> 个区域</p>
-                <p>总计 <span className="text-slate-200">{regions.reduce((sum, r) => sum + (regionPreviews.get(r.id)?.totalFrames || r.frameCount), 0)}</span> 帧</p>
+              <div className="p-2 rounded-lg text-xs" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-secondary)' }}>
+                <p>已定义 <span style={{ color: 'var(--text-primary)' }}>{regions.length}</span> 个区域</p>
+                <p>总计 <span style={{ color: 'var(--text-primary)' }}>{regions.reduce((sum, r) => sum + (regionPreviews.get(r.id)?.totalFrames || r.frameCount), 0)}</span> 帧</p>
               </div>
             )}
           </div>
 
-          <div className="flex-shrink-0 p-2 border-t border-indigo-500/20 bg-slate-700/30 space-y-1.5">
+          <div className="flex-shrink-0 p-2 space-y-1.5" style={{ borderTop: '1px solid var(--border-subtle)', background: 'var(--bg-elevated)' }}>
             <Button variant="primary" size="sm" icon={<Download className="w-4 h-4" />} onClick={handleExport} disabled={regions.length === 0} loading={isLoading} className="w-full">
               批量导出 ({regions.length})
             </Button>
@@ -570,53 +582,57 @@ function RegionItem({
   }
 
   return (
-    <motion.div
-      layout
-      className={`p-1.5 rounded-lg cursor-pointer transition-colors ${
-        isSelected ? 'bg-blue-900/40 border-blue-500/50' : 'bg-violet-900/60 hover:bg-violet-800/60 border-transparent'
-      } border`}
+    <div
+      className="p-2 rounded-lg cursor-pointer"
+      style={{
+        background: isSelected ? 'var(--bg-hover)' : 'var(--bg-elevated)',
+        border: `1px solid ${isSelected ? 'var(--accent-primary)' : 'var(--border-default)'}`
+      }}
       onClick={onSelect}
     >
       {/* 标题行 */}
-      <div className="flex items-center gap-1.5">
-        <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: region.color }} />
+      <div className="flex items-center gap-1.5 mb-2">
+        <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: region.color }} />
         {isEditing ? (
           <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)} onBlur={handleSaveName}
             onKeyDown={(e) => { if (e.key === 'Enter') handleSaveName(); if (e.key === 'Escape') onStopEdit() }}
-            className="flex-1 px-1 py-0.5 text-xs rounded border border-blue-500 bg-violet-900 text-violet-200 focus:outline-none" autoFocus onClick={(e) => e.stopPropagation()} />
+            className="flex-1 px-2 py-1 text-sm rounded-lg focus:outline-none"
+            style={{ background: 'var(--bg-surface)', border: '1px solid var(--accent-primary)', color: 'var(--text-primary)' }}
+            autoFocus onClick={(e) => e.stopPropagation()} />
         ) : (
-          <span className="flex-1 text-xs font-medium text-violet-200 truncate">{region.name}</span>
+          <span className="flex-1 text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>{region.name}</span>
         )}
-        <span className="text-xs text-violet-500">{preview?.totalFrames || region.frameCount}帧</span>
+        <span className="text-xs whitespace-nowrap" style={{ color: 'var(--text-secondary)' }}>{preview?.totalFrames || region.frameCount}帧</span>
         <button onClick={(e) => { e.stopPropagation(); isEditing ? handleSaveName() : (setEditName(region.name), onEdit()) }}
-          className="p-0.5 hover:bg-violet-700 rounded"><Edit3 className="w-3 h-3 text-violet-500" /></button>
+          className="p-1 rounded" style={{ color: 'var(--text-tertiary)' }}><Edit3 className="w-3.5 h-3.5" /></button>
         <button onClick={(e) => { e.stopPropagation(); onDelete() }}
-          className="p-0.5 hover:bg-red-900/50 rounded"><Trash2 className="w-3 h-3 text-violet-500 hover:text-red-400" /></button>
+          className="p-1 rounded hover:text-red-400" style={{ color: 'var(--text-tertiary)' }}><Trash2 className="w-3.5 h-3.5" /></button>
       </div>
       
-      {/* 选中时显示属性编辑 */}
-      {isSelected && (
-        <div className="mt-1.5 grid grid-cols-3 gap-1 text-xs" onClick={(e) => e.stopPropagation()}>
-          <div>
-            <span className="text-violet-500 text-[10px]">起始行</span>
-            <input type="number" min={1} value={region.startRow + 1}
-              onChange={(e) => onUpdate({ startRow: Math.max(0, (parseInt(e.target.value) || 1) - 1) })}
-              className="w-full px-1 py-0.5 text-xs rounded border border-violet-500/20 bg-violet-900 text-violet-200" />
-          </div>
-          <div>
-            <span className="text-violet-500 text-[10px]">起始列</span>
-            <input type="number" min={0} value={region.startCol}
-              onChange={(e) => onUpdate({ startCol: Math.max(0, parseInt(e.target.value) || 0) })}
-              className="w-full px-1 py-0.5 text-xs rounded border border-violet-500/20 bg-violet-900 text-violet-200" />
-          </div>
-          <div>
-            <span className="text-violet-500 text-[10px]">帧数</span>
-            <input type="number" min={1} value={region.frameCount}
-              onChange={(e) => onUpdate({ frameCount: Math.max(1, parseInt(e.target.value) || 1) })}
-              className="w-full px-1 py-0.5 text-xs rounded border border-violet-500/20 bg-violet-900 text-violet-200" />
-          </div>
+      {/* 属性编辑 - 始终显示 */}
+      <div className="grid grid-cols-3 gap-1.5" onClick={(e) => e.stopPropagation()}>
+        <div>
+          <span className="text-xs block mb-0.5" style={{ color: 'var(--text-secondary)' }}>起始行</span>
+          <input type="number" min={1} value={region.startRow + 1}
+            onChange={(e) => onUpdate({ startRow: Math.max(0, (parseInt(e.target.value) || 1) - 1) })}
+            className="w-full px-2 py-1.5 text-sm rounded-lg focus:outline-none"
+            style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-default)', color: 'var(--text-primary)' }} />
         </div>
-      )}
-    </motion.div>
+        <div>
+          <span className="text-xs block mb-0.5" style={{ color: 'var(--text-secondary)' }}>起始列</span>
+          <input type="number" min={0} value={region.startCol}
+            onChange={(e) => onUpdate({ startCol: Math.max(0, parseInt(e.target.value) || 0) })}
+            className="w-full px-2 py-1.5 text-sm rounded-lg focus:outline-none"
+            style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-default)', color: 'var(--text-primary)' }} />
+        </div>
+        <div>
+          <span className="text-xs block mb-0.5" style={{ color: 'var(--text-secondary)' }}>帧数</span>
+          <input type="number" min={1} value={region.frameCount}
+            onChange={(e) => onUpdate({ frameCount: Math.max(1, parseInt(e.target.value) || 1) })}
+            className="w-full px-2 py-1.5 text-sm rounded-lg focus:outline-none"
+            style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-default)', color: 'var(--text-primary)' }} />
+        </div>
+      </div>
+    </div>
   )
 }

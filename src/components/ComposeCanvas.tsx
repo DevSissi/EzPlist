@@ -23,8 +23,10 @@ import {
   MoveVertical,
 } from 'lucide-react'
 import { useComposeStore, calculateSnap, type CanvasSprite } from '../store/composeStore'
+import { useCanvasSettingsStore, getBackgroundStyle } from '../store/canvasSettingsStore'
 import { getAssetUrl } from '../lib/tauri'
 import { Button } from './ui/Button'
+import { BackgroundSettings } from './BackgroundSettings'
 
 /**
  * 合成画布组件
@@ -41,7 +43,6 @@ export function ComposeCanvas() {
     offsetY,
     snapEnabled,
     activeGuides,
-    backgroundType,
     isSelecting,
     selectionStart,
     selectionEnd,
@@ -61,7 +62,6 @@ export function ComposeCanvas() {
     removeSprites,
     alignSelected,
     distributeSelected,
-    setBackgroundType,
     autoArrange,
     getCanvasBounds,
   } = useComposeStore()
@@ -372,21 +372,8 @@ export function ComposeCanvas() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [selectedIds, canvasSprites, removeSprites, deselectAll, updateSpritesPosition])
 
-  /**
-   * 获取背景样式
-   */
-  const backgroundStyle = useMemo(() => {
-    switch (backgroundType) {
-      case 'white':
-        return 'bg-white'
-      case 'black':
-        return 'bg-gray-900'
-      case 'checker':
-        return 'checkerboard'
-      default:
-        return 'bg-transparent'
-    }
-  }, [backgroundType])
+  // 画布背景设置
+  const canvasSettings = useCanvasSettingsStore()
 
   /**
    * 计算框选矩形
@@ -458,23 +445,8 @@ export function ComposeCanvas() {
             title={snapEnabled ? '禁用吸附' : '启用吸附'}
           />
 
-          {/* 背景切换 */}
-          <Button
-            variant="ghost"
-            size="sm"
-            icon={<Grid3X3 className="w-4 h-4" />}
-            onClick={() => {
-              const types: Array<'checker' | 'white' | 'black' | 'transparent'> = [
-                'checker',
-                'white',
-                'black',
-                'transparent',
-              ]
-              const currentIndex = types.indexOf(backgroundType)
-              setBackgroundType(types[(currentIndex + 1) % types.length])
-            }}
-            title="切换背景"
-          />
+          {/* 背景设置 */}
+          <BackgroundSettings />
 
           {/* 自动排列 */}
           <Button
@@ -578,8 +550,9 @@ export function ComposeCanvas() {
         {/* 可变换的画布 */}
         <div
           ref={canvasRef}
-          className={`absolute origin-top-left ${backgroundStyle}`}
+          className="absolute origin-top-left"
           style={{
+            ...getBackgroundStyle(canvasSettings),
             transform: `translate(${offsetX}px, ${offsetY}px) scale(${scale})`,
             minWidth: Math.max(2000, bounds.maxX + 500),
             minHeight: Math.max(2000, bounds.maxY + 500),
